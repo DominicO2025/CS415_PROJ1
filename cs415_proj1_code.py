@@ -1,3 +1,5 @@
+import matplotlib.pyplot as plt
+
 
 def fib(i, NumAdditions):
     if(i == 1):
@@ -53,15 +55,15 @@ def expo_div_and_conq(a, n, mult):
     
     elif n % 2 == 0:
         mult += 1
-        curr_val, mult = expo_dec_by_const(a, n//2, mult)
-        curr_val2, mult = expo_dec_by_const(a, n//2, mult)
+        curr_val, mult = expo_div_and_conq(a, n//2, mult)
+        curr_val2, mult = expo_div_and_conq(a, n//2, mult)
         return (curr_val * curr_val2), mult
     
     else:
         mult += 1
-        curr_val, mult = expo_dec_by_const(a, (n-1)//2, mult)
-        curr_val2, mult = expo_dec_by_const(a, (n-1)//2, mult)
-        return ((curr_val * curr_val2) * a), mult
+        curr_val, mult = expo_div_and_conq(a, (n-1)//2, mult)
+        curr_val2, mult = expo_div_and_conq(a, (n-1)//2, mult)
+        return ((curr_val * curr_val2) * a), mult + 1
 
 
 def userinput():
@@ -72,8 +74,9 @@ def userinput():
 
     FibNumber, NumAdditions = fib(i, NumAdditions)
 
+    NumAdditions = 0
     m, NumAdditions = fib(i + 1, NumAdditions)
-
+    NumAdditions = 0 
     n, NumAdditions = fib(i, NumAdditions)
 
     modulo_div = euclids(m, n, numComp)
@@ -152,7 +155,7 @@ def scatterplot():
     
 
 
-mode = int(input("Would you like Scatter Plot Mode (1) or User Testing Mode (2)?"))
+mode = int(input("Would you like Scatter Plot Mode (1) or User Testing Mode (2)? "))
 
 if(mode == 1):
     scatterplot();
