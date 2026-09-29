@@ -89,6 +89,7 @@ def userinput():
 
     FibNumber, NumAdditions = fib(i, NumAdditions)
 
+    NumAdditions = 0
     m, NumAdditions = fib(i + 1, NumAdditions)
 
     n, NumAdditions = fib(i, NumAdditions)
