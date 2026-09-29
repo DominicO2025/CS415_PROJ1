@@ -2,21 +2,45 @@ import matplotlib.pyplot as plt
 
 def readFile(n, secondary):
     with open("data/testSet/data" + str(n) + secondary + ".txt", "r") as file:
-        return [line.strip() for line in file]
+        return [int(line.strip()) for line in file]
     
 def InsertionSort(list):
+    numOfComparisons = 0
+
     for n in range(1, len(list)):
         curr = list[n]
+        j = n - 1
 
-        while list[n] < list[n-1]:
-            list[n], list[n-1] = list[n-1], list[n]
+        while j >= 0:
+            numOfComparisons += 1
+
+            if list[j] > curr:
+                list[j + 1] = list[j]
+                j -= 1
+            else:
+                break
+
+        list[j + 1] = curr
+
+    return list, numOfComparisons
 
 def SelectionSort(list):
-    biggestval = list[0]
+    numOfComparisons = 0 
+    
+    for i in range(len(list) - 1, 0, -1):
+        biggestval = 0
 
-    for n in list:
-        if n > biggestval:
-            biggestval = n
+        for j in range(1, i + 1):
+            numOfComparisons += 1
+
+            if list[j] > list[biggestval]:
+                biggestval = j
+
+        list[i], list[biggestval] = list[biggestval], list[i]
+
+    return list, numOfComparisons
+
+        
 
 def fib(i, NumAdditions):
     if(i == 1):
@@ -26,6 +50,7 @@ def fib(i, NumAdditions):
     
     fib1, NumAdditions = fib(i - 1, NumAdditions)
     fib2, NumAdditions  = fib(i - 2, NumAdditions)
+
 
     NumAdditions += 1 
 
@@ -62,7 +87,7 @@ def expo_dec_by_const(a, n, mult):
     else:
         mult += 1
         curr_val, mult = expo_dec_by_const(a, (n-1)//2, mult)
-        return ((curr_val ** 2) * a), mult
+        return ((curr_val ** 2) * a), mult + 1
 
 
 def expo_div_and_conq(a, n, mult):
@@ -73,27 +98,25 @@ def expo_div_and_conq(a, n, mult):
         mult += 1
         curr_val, mult = expo_div_and_conq(a, n//2, mult)
         curr_val2, mult = expo_div_and_conq(a, n//2, mult)
-        return ((curr_val * curr_val2) * a), mult + 1
+        return (curr_val * curr_val2), mult 
     
     else:
         mult += 1
-        curr_val, mult = expo_dec_by_const(a, (n-1)//2, mult)
-        curr_val2, mult = expo_dec_by_const(a, (n-1)//2, mult)
-        return ((curr_val * curr_val2) * a), mult
+        curr_val, mult = expo_div_and_conq(a, (n-1)//2, mult)
+        curr_val2, mult = expo_div_and_conq(a, (n-1)//2, mult)
+        return ((curr_val * curr_val2) * a), mult + 1
 
 
 def userinput():
     i = int(input("What is your kth number you would like to compute "))
 
-    NumAdditions = 0
     numComp = 0
 
-    FibNumber, NumAdditions = fib(i, NumAdditions)
+    FibNumber, NumAdditions = fib(i, 0)
 
-    NumAdditions = 0
-    m, NumAdditions = fib(i + 1, NumAdditions)
-
-    n, NumAdditions = fib(i, NumAdditions)
+    
+    m, placeHolder = fib(i + 1, 0)
+    n, placeHolder = fib(i, 0)
 
     modulo_div = euclids(m, n, numComp)
 
@@ -108,9 +131,9 @@ def userinput():
     exponent = int(input("What would you like your exponent to be? "))
     mult = 0
 
-    by_one, mult = expo_dec_by_one(base, exponent, mult)
-    by_const, mult = expo_dec_by_const(base, exponent, mult)
-    div_conq, mult = expo_div_and_conq(base, exponent, mult)
+    by_one, one_mult = expo_dec_by_one(base, exponent, 0)
+    by_const, const_mult = expo_dec_by_const(base, exponent, 0)
+    div_conq, conq_mult = expo_div_and_conq(base, exponent, 0)
 
 
 
@@ -179,18 +202,17 @@ def scatterplot():
     print("(n, M(n))")
     
     base = 4
-    mult = 0
+    #mult = 0
 
+    xValues = []
+    decByOneValues = []
+    decByConstValues = []
+    divAndConqValues = []
+    
     for i in range (1, 40, 5):
-
-        xValues = []
-        decByOneValues = []
-        decByConstValues = []
-        divAndConqValues = []
-
-        by_one, one_mult = expo_dec_by_one(base, i, mult)
-        by_const, cont_mult = expo_dec_by_const(base, i, mult)
-        div_conq, conq_mult = expo_div_and_conq(base, i, mult)
+        by_one, one_mult = expo_dec_by_one(base, i, 0)
+        by_const, cont_mult = expo_dec_by_const(base, i, 0)
+        div_conq, conq_mult = expo_div_and_conq(base, i, 0)
 
         xValues.append(i)
         decByOneValues.append(one_mult)
