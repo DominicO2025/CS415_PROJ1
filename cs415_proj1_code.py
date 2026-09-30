@@ -1,8 +1,13 @@
+import os
 import matplotlib.pyplot as plt
 
-def readFile(n, secondary):
-    with open("data/testSet/data" + str(n) + secondary + ".txt", "r") as file:
+data_path = "/Users/kwoodakw/415 proj/CS415_PROJ1"
+
+def readFile(n, secondary, folder="testSet"):
+    path = os.path.join(data_path, folder, "data" + str(n) + secondary + ".txt")
+    with open(path, "r") as file:
         return [int(line.strip()) for line in file]
+
     
 def InsertionSort(list):
     numOfComparisons = 0
@@ -107,6 +112,16 @@ def expo_div_and_conq(a, n, mult):
         return ((curr_val * curr_val2) * a), mult + 1
 
 
+def dataTest(data):
+    placeHolder, insertionData = InsertionSort(data.copy())
+    placeHolder, selectionData = SelectionSort(data.copy())
+    return insertionData, selectionData
+
+def GetTestSizes():
+        sizes = list(range(100,10000,1000))
+        sizes.append(10000)
+        return sizes
+
 def userinput():
     i = int(input("What is your kth number you would like to compute "))
 
@@ -129,7 +144,7 @@ def userinput():
 
     base = int(input("For exponentiation would would you like your base to be? "))
     exponent = int(input("What would you like your exponent to be? "))
-    mult = 0
+    
 
     by_one, one_mult = expo_dec_by_one(base, exponent, 0)
     by_const, const_mult = expo_dec_by_const(base, exponent, 0)
@@ -141,8 +156,19 @@ def userinput():
     print("Decrease by a constant outputs", by_const)
     print("Divide and conquire outputs", div_conq)
 
+    print()
 
-    
+    n = int(input("What size list would you like to sort (10 - 100, increment of 10)? "))
+    data = readFile(n, "", "smallSet")
+
+    sortedInsertion, insertionComparisons = InsertionSort(data.copy())
+    sortedSelection, selectionComparisons = SelectionSort(data.copy())
+
+    print("Insertion sort result: ", sortedInsertion)
+    print("Insertion sort number of comparisons: ", insertionComparisons)
+    print("Selection sort result: ", sortedSelection)
+    print("Selection sort number of comparisons: ", selectionComparisons)  
+
 
 def scatterplot():
     NumAdditions = 0
@@ -225,21 +251,70 @@ def scatterplot():
         print()
 
     plt.figure()
-    plt.scatter(xValues, decByOneValues)
-    plt.scatter(xValues, decByConstValues)
-    plt.scatter(xValues, divAndConqValues)
-    plt.xlabel("number of")
+    plt.scatter(xValues, decByOneValues, label = "Decrease by one")
+    plt.scatter(xValues, decByConstValues, label = "Decrease by constant factor")
+    plt.scatter(xValues, divAndConqValues, label = "Divide and conquer")
+    plt.title("exponentiation graph")
+    plt.xlabel("n")
+    plt.ylabel("number of multiplications")
+    plt.legend()
     plt.show()
+
+    insertBestCase = []
+    insertAverageCase = []
+    insertWorstCase = []
+
+    selectBestCase = []
+    selectAverageCase = []
+    selectWorstCase = []
+
+    inputSize = GetTestSizes()
 
     #Prints the number of comparisons for insertion and selections sort
     #This grabs the sorted sets (best case)
     for i in range(100, 10000, 100):
-        list = readFile(i, '')
-    
-        sorted = InsertionSort(list)
-    
+        bestSet = readFile(i, "_sorted")
+        averageSet = readFile(i, "")
+        worstSet = readFile(i, "_rSorted")
+
+        insertionComparisons, selectionComparisons = dataTest(bestSet)
+        insertBestCase.append(insertionComparisons)
+        selectBestCase.append(selectionComparisons)
+
+        insertionComparisons, selectionComparisons = dataTest(averageSet)
+        insertAverageCase.append(insertionComparisons)
+        selectAverageCase.append(selectionComparisons)
+
+        insertionComparisons, selectionComparisons = dataTest(worstSet)
+        insertWorstCase.append(insertionComparisons)
+        selectWorstCase.append(selectionComparisons)    
 
 
+    plt.scatter(inputSize, insertBestCase, label="Insertion Sort")
+    plt.scatter(inputSize, selectBestCase, label="Selection Sort")
+    plt.title("Comparisons best Case")
+    plt.xlabel("n")
+    plt.ylabel("number of comparisons")
+    plt.legend()
+    plt.show()
+
+    plt.scatter(inputSize, insertAverageCase, label="Insertion Sort")
+    plt.scatter(inputSize, selectAverageCase, label="Selection Sort")
+    plt.title("Comparisons average Case")
+    plt.xlabel("n")
+    plt.ylabel("number of comparisons")
+    plt.legend()
+    plt.show()
+
+    plt.scatter(inputSize, insertWorstCase, label="Insertion Sort")
+    plt.scatter(inputSize, selectWorstCase, label="Selection Sort")
+    plt.title("Comparisons worst Case")
+    plt.xlabel("n")
+    plt.ylabel("number of comparisons")
+    plt.legend()
+    plt.show()
+
+    
 mode = int(input("Would you like Scatter Plot Mode (1) or User Testing Mode (2)? "))
 
 if(mode == 1):
