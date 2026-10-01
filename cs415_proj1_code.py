@@ -1,9 +1,18 @@
 import os
+import matplotlib
+matplotlib.use("Agg")  # no GUI windows: plots are saved as PNG files
 import matplotlib.pyplot as plt
 
-#data_path = "/Users/kwoodakw/415 proj/CS415_PROJ1"
+graph_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "graphs")
 
-def readFile(n, secondary, folder="testSet", data_path):
+def savePlot(name):
+    os.makedirs(graph_dir, exist_ok=True)
+    path = os.path.join(graph_dir, name + ".png")
+    plt.savefig(path, dpi=150)
+    plt.close()
+    print("Saved", path)
+
+def readFile(n, secondary, data_path, folder="testSet"):
     path = os.path.join(data_path, folder, "data" + str(n) + secondary + ".txt")
     with open(path, "r") as file:
         return [int(line.strip()) for line in file]
@@ -63,7 +72,7 @@ def fib(i, NumAdditions):
 
 def euclids(m, n, numComp):
     if n == 0:
-        return numComp
+        return m, numComp
     
     numComp += 1 
 
@@ -133,11 +142,12 @@ def userinput(data_path):
     m, placeHolder = fib(i + 1, 0)
     n, placeHolder = fib(i, 0)
 
-    modulo_div = euclids(m, n, numComp)
+    gcd, modulo_div = euclids(m, n, numComp)
 
 
     print("kth fibonacci term is ", FibNumber)
     print("Num additions is ", NumAdditions)
+    print("GCD(Fib(k+1), Fib(k)) is ", gcd)
     print("The number of modulo divisions is ", modulo_div)
 
     print()
@@ -159,7 +169,7 @@ def userinput(data_path):
     print()
 
     n = int(input("What size list would you like to sort (10 - 100, increment of 10)? "))
-    data = readFile(n, "", "smallSet", data_path)
+    data = readFile(n, "", data_path, "smallSet")
 
     sortedInsertion, insertionComparisons = InsertionSort(data.copy())
     sortedSelection, selectionComparisons = SelectionSort(data.copy())
@@ -178,9 +188,9 @@ def scatterplot(data_path):
     additionValues = []
 
     #Prints the number of additions when running the fibinocci sequence from ranges 0-40
-    print("(k, A(k))")
+    #print("(k, A(k))")
 
-    for i in range (0, 40, 5):
+    for i in range (5, 40, 5):
         NumAdditions = 0
         FibNumber, NumAdditions = fib(i, NumAdditions)
 
@@ -193,7 +203,7 @@ def scatterplot(data_path):
     plt.title("fib sequence graph")
     plt.xlabel("k")
     plt.ylabel("number of additions")
-    plt.show()
+    savePlot("task1a_fibonacci")
 
     #Prints the number of modulo divisions in the worst case from 0-40
     print()
@@ -202,7 +212,7 @@ def scatterplot(data_path):
     nValues = []
     divisionValues = []
 
-    for i in range (0, 40, 5):
+    for i in range (5, 40, 5):
         #could improve this given the time making use of values generated from task 1a
         NumAdditions = 0
         m, NumAdditions = fib(i + 1, NumAdditions)
@@ -210,7 +220,7 @@ def scatterplot(data_path):
         n, NumAdditions = fib(i, NumAdditions)
         
         numComp = 0
-        modulo_div = euclids(m, n, numComp)
+        gcd, modulo_div = euclids(m, n, numComp)
 
         nValues.append(n)
         divisionValues.append(modulo_div)
@@ -221,11 +231,11 @@ def scatterplot(data_path):
     plt.title("euclid graph")
     plt.xlabel("n values")
     plt.ylabel("number of div")
-    plt.show()
+    savePlot("task1b_euclid")
     
     #Prints the number of multiplactions for decrease by one, decrease by constant, and divide and conquer for exponents
     print()
-    print("(n, M(n))")
+    #print("(n, M(n))")
     
     base = 4
     #mult = 0
@@ -258,7 +268,7 @@ def scatterplot(data_path):
     plt.xlabel("n")
     plt.ylabel("number of multiplications")
     plt.legend()
-    plt.show()
+    savePlot("task2_exponentiation")
 
     insertBestCase = []
     insertAverageCase = []
@@ -268,11 +278,11 @@ def scatterplot(data_path):
     selectAverageCase = []
     selectWorstCase = []
 
-    inputSize = GetTestSizes()
+    inputSize = list(range(100, 10001, 100))
 
     #Prints the number of comparisons for insertion and selections sort
     #This grabs the sorted sets (best case)
-    for i in range(100, 10000, 100):
+    for i in inputSize:
         bestSet = readFile(i, "_sorted", data_path)
         averageSet = readFile(i, "", data_path)
         worstSet = readFile(i, "_rSorted", data_path)
@@ -296,7 +306,7 @@ def scatterplot(data_path):
     plt.xlabel("n")
     plt.ylabel("number of comparisons")
     plt.legend()
-    plt.show()
+    savePlot("task3_best_case")
 
     plt.scatter(inputSize, insertAverageCase, label="Insertion Sort")
     plt.scatter(inputSize, selectAverageCase, label="Selection Sort")
@@ -304,7 +314,7 @@ def scatterplot(data_path):
     plt.xlabel("n")
     plt.ylabel("number of comparisons")
     plt.legend()
-    plt.show()
+    savePlot("task3_average_case")
 
     plt.scatter(inputSize, insertWorstCase, label="Insertion Sort")
     plt.scatter(inputSize, selectWorstCase, label="Selection Sort")
@@ -312,10 +322,11 @@ def scatterplot(data_path):
     plt.xlabel("n")
     plt.ylabel("number of comparisons")
     plt.legend()
-    plt.show()
+    savePlot("task3_worst_case")
 
+    
+data_path = input("Please put in the path to the data you would like to use. ").strip()
 
-data_path = input("Please put in the path to the data you would like to use. ")
 mode = int(input("Would you like Scatter Plot Mode (1) or User Testing Mode (2)? "))
 
 if(mode == 1):
