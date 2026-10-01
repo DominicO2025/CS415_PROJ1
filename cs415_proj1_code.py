@@ -1,9 +1,9 @@
 import os
 import matplotlib.pyplot as plt
 
-data_path = "/Users/kwoodakw/415 proj/CS415_PROJ1"
+#data_path = "/Users/kwoodakw/415 proj/CS415_PROJ1"
 
-def readFile(n, secondary, folder="testSet"):
+def readFile(n, secondary, folder="testSet", data_path):
     path = os.path.join(data_path, folder, "data" + str(n) + secondary + ".txt")
     with open(path, "r") as file:
         return [int(line.strip()) for line in file]
@@ -122,7 +122,7 @@ def GetTestSizes():
         sizes.append(10000)
         return sizes
 
-def userinput():
+def userinput(data_path):
     i = int(input("What is your kth number you would like to compute "))
 
     numComp = 0
@@ -159,7 +159,7 @@ def userinput():
     print()
 
     n = int(input("What size list would you like to sort (10 - 100, increment of 10)? "))
-    data = readFile(n, "", "smallSet")
+    data = readFile(n, "", "smallSet", data_path)
 
     sortedInsertion, insertionComparisons = InsertionSort(data.copy())
     sortedSelection, selectionComparisons = SelectionSort(data.copy())
@@ -170,7 +170,7 @@ def userinput():
     print("Selection sort number of comparisons: ", selectionComparisons)  
 
 
-def scatterplot():
+def scatterplot(data_path):
     NumAdditions = 0
     numComp = 0
 
@@ -273,9 +273,9 @@ def scatterplot():
     #Prints the number of comparisons for insertion and selections sort
     #This grabs the sorted sets (best case)
     for i in range(100, 10000, 100):
-        bestSet = readFile(i, "_sorted")
-        averageSet = readFile(i, "")
-        worstSet = readFile(i, "_rSorted")
+        bestSet = readFile(i, "_sorted", data_path)
+        averageSet = readFile(i, "", data_path)
+        worstSet = readFile(i, "_rSorted", data_path)
 
         insertionComparisons, selectionComparisons = dataTest(bestSet)
         insertBestCase.append(insertionComparisons)
@@ -314,11 +314,12 @@ def scatterplot():
     plt.legend()
     plt.show()
 
-    
+
+data_path = input("Please put in the path to the data you would like to use. ")
 mode = int(input("Would you like Scatter Plot Mode (1) or User Testing Mode (2)? "))
 
 if(mode == 1):
-    scatterplot();
+    scatterplot(data_path);
 elif(mode == 2):
-    userinput();
+    userinput(data_path);
 
